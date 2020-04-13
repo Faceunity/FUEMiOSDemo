@@ -203,8 +203,6 @@ static FUManager *shareManager = NULL;
 
     items[0] = [FURenderer itemWithContentsOfFile:path];
     
-    /* 点位共存模式*/
-    [FURenderer itemSetParam:items[0] withName:@"landmarks_type" value:@(FUAITYPE_FACEPROCESSOR)];
 }
 /**设置美颜参数*/
 - (void)setBeautyParams {
