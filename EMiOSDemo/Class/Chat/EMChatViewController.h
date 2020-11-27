@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class EMConversationModel;
 @interface EMChatViewController : EMRefreshViewController
 
-@property(nonatomic, strong) UIAlertController *alertController;
+//@property(nonatomic, strong) UIAlertController *alertController;
 
 - (instancetype)initWithConversationId:(NSString *)aId
                                   type:(EMConversationType)aType

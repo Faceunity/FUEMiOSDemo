@@ -39,7 +39,9 @@
     
     [self _initDemo];
     [self _initHyphenate];
-
+    
+    NSLog(@"version = %@",[[EMClient sharedClient] version]);
+    
     [self.window makeKeyAndVisible];
     
     return YES;
@@ -53,6 +55,7 @@
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     [[EMClient sharedClient] applicationWillEnterForeground:application];
+    
 }
 
 // 将得到的deviceToken传给SDK
@@ -123,6 +126,8 @@
         gIsInitializedSDK = YES;
         [[EMClient sharedClient] initializeSDKWithOptions:[demoOptions toOptions]];
         
+      
+        
         [[NSNotificationCenter defaultCenter] postNotificationName:ACCOUNT_LOGIN_CHANGED object:@(YES)];
     } else {
         [[NSNotificationCenter defaultCenter] postNotificationName:ACCOUNT_LOGIN_CHANGED object:@(NO)];
@@ -190,6 +195,7 @@
             navigationController = [[UINavigationController alloc] initWithRootViewController:homeController];
         }
         
+        [[EMClient sharedClient] getPushNotificationOptionsFromServerWithCompletion:^(EMPushOptions *aOptions, EMError *aError) {}];
         [EMDemoHelper shareHelper];
         [EMNotificationHelper shared];
         [DemoCallManager sharedManager];

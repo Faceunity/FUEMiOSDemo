@@ -1,7 +1,7 @@
 platform :ios, '9.0'
 
 # Import CocoaPods sources
-source 'https://github.com/CocoaPods/Specs.git'
+#source 'https://github.com/CocoaPods/Specs.git'
 
 target 'EMiOSDemo' do
 
@@ -10,7 +10,12 @@ target 'EMiOSDemo' do
     pod 'MBProgressHUD', '~> 1.1.0'
     pod 'SDWebImage', '~> 4.0'
     pod 'SDWebImage/GIF'
-    pod 'GPUImage'
-    pod 'Hyphenate'
+    pod 'Hyphenate', '~> 3.7.2'
+    pod 'FLAnimatedImage', '~> 1.0'
+    
+    pod 'SVProgressHUD'
+    pod 'Nama', '~> 7.2.0'
+    pod 'MLeaksFinder'
+    
 
 end

@@ -56,6 +56,9 @@
 - (void)dealloc
 {
     [self clearDataAndView];
+    
+    NSLog(@"------%s",__func__);
+    
 }
 
 - (void)clearDataAndView
@@ -81,9 +84,11 @@
     self.timeLabel.textAlignment = NSTextAlignmentRight;
     self.timeLabel.text = @"00:00";
     [self.view addSubview:self.timeLabel];
+    
+    __weak __typeof(self)weakSelf = self;
     [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.statusLabel);
-        make.right.equalTo(self.view).offset(-15);
+        make.top.equalTo(weakSelf.statusLabel);
+        make.right.equalTo(weakSelf.view).offset(-15);
     }];
     
     self.remoteNameLabel = [[UILabel alloc] init];
@@ -92,9 +97,9 @@
     self.remoteNameLabel.textColor = [UIColor blackColor];
     [self.view addSubview:self.remoteNameLabel];
     [self.remoteNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.statusLabel.mas_bottom).offset(15);
-        make.left.equalTo(self.statusLabel.mas_left).offset(5);
-        make.right.equalTo(self.view).offset(-15);
+        make.top.equalTo(weakSelf.statusLabel.mas_bottom).offset(15);
+        make.left.equalTo(weakSelf.statusLabel.mas_left).offset(5);
+        make.right.equalTo(weakSelf.view).offset(-15);
     }];
     
     self.waitImgView = [[UIImageView alloc] init];
@@ -107,21 +112,21 @@
     [self.waitImgView setAnimationImages:array];
     [self.view addSubview:self.waitImgView];
     [self.waitImgView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.view).offset(20);
-        make.right.equalTo(self.view).offset(-20);
+        make.left.equalTo(weakSelf.view).offset(20);
+        make.right.equalTo(weakSelf.view).offset(-20);
     }];
     
     [self.minButton setImage:[UIImage imageNamed:@"minimize_gray"] forState:UIControlStateNormal];
     [self.minButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.equalTo(self.view).offset(-30);
-        make.right.equalTo(self.view).offset(-25);
+        make.bottom.equalTo(weakSelf.view).offset(-30);
+        make.right.equalTo(weakSelf.view).offset(-25);
         make.width.height.equalTo(@40);
     }];
     
     if (self.callSession.isCaller) {
         [self.hangupButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerX.equalTo(self.view);
-            make.bottom.equalTo(self.view).offset(-40);
+            make.centerX.equalTo(weakSelf.view);
+            make.bottom.equalTo(weakSelf.view).offset(-40);
             make.width.height.equalTo(@60);
         }];
     } else {
@@ -129,8 +134,8 @@
         CGFloat padding = ([UIScreen mainScreen].bounds.size.width - size * 2) / 3;
         
         [self.hangupButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.bottom.equalTo(self.view).offset(-40);
-            make.right.equalTo(self.view).offset(-padding);
+            make.bottom.equalTo(weakSelf.view).offset(-40);
+            make.right.equalTo(weakSelf.view).offset(-padding);
             make.width.height.mas_equalTo(size);
         }];
         
@@ -140,8 +145,8 @@
         [self.answerButton addTarget:self action:@selector(answerAction) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:self.answerButton];
         [self.answerButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.bottom.equalTo(self.hangupButton);
-            make.left.equalTo(self.view).offset(padding);
+            make.bottom.equalTo(weakSelf.hangupButton);
+            make.left.equalTo(weakSelf.view).offset(padding);
             make.width.height.mas_equalTo(size);
         }];
     }
