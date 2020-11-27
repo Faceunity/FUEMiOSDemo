@@ -19,8 +19,12 @@
 #import "EMChatViewController.h"
 #import "AudioRecord.h"
 
+/**faceU */
 #import "FUManager.h"
 #import "FUCamera.h"
+
+#import "FUTestRecorder.h"
+
 
 static DemoCallManager *callManager = nil;
 
@@ -107,7 +111,7 @@ static DemoCallManager *callManager = nil;
     } else {
         options = [[EMClient sharedClient].callManager getCallOptions];
         options.isSendPushIfOffline = NO;
-        options.videoResolution = EMCallVideoResolution640_480;
+        options.videoResolution = EMCallVideoResolution1280_720 ;
     }
     
     //xiaoming.li
@@ -193,6 +197,8 @@ static DemoCallManager *callManager = nil;
     [[NSNotificationCenter defaultCenter] postNotificationName:CALL_PUSH_VIEWCONTROLLER object:nil];
     
     gIsCalling = YES;
+    
+    __weak __typeof(self)weakSelf = self;
     @synchronized (_callLock) {
         [self _startCallTimeoutTimer];
         
@@ -210,6 +216,7 @@ static DemoCallManager *callManager = nil;
                 if(self.alertView) {
                     [self.alertView dismissViewControllerAnimated:NO completion:nil];
                     self.alertView = nil;
+                    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didAlert" object:nil];
                 }
                 
                 UIViewController *rootViewController = [[UIApplication sharedApplication].delegate window].rootViewController;
@@ -546,6 +553,8 @@ static DemoCallManager *callManager = nil;
     
     if (pixelBuffer != NULL) {
         CMTime cmTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
+        
+        [[FUTestRecorder shareRecorder] processFrameWithLog];
         
       /* 视频处理 */
         [[FUManager shareManager] renderItemsToPixelBuffer:pixelBuffer];

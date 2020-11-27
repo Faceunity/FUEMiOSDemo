@@ -10,7 +10,6 @@
 
 #import "EMGlobalVariables.h"
 #import "EMDemoOptions.h"
-
 @interface EMConferenceViewController ()
 
 @property (nonatomic, strong) UIButton *gridButton;
@@ -19,13 +18,9 @@
 
 @property (nonatomic) BOOL isSetSpeaker;
 
-
 @end
 
 @implementation EMConferenceViewController
-
-
-
 //会议发起人
 - (instancetype)initWithType:(EMConferenceType)aType
                     password:(NSString *)aPassword
@@ -321,9 +316,6 @@
         
         if (!self.microphoneButton.isSelected && self.speakerButton.isSelected && !self.isSetSpeaker) {
             self.isSetSpeaker = YES;
-            AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-            [audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
-            [audioSession setActive:YES error:nil];
         }
     }
 }
@@ -423,7 +415,6 @@
     }
 }
 
-
 #pragma mark - Video Views
 
 - (CGRect)getNewVideoViewFrame
@@ -480,9 +471,7 @@
     
     EMStreamParam *pubConfig = [[EMStreamParam alloc] init];
     pubConfig.streamName = [EMClient sharedClient].currentUsername;
-    
-    /* <#string#> */
-    pubConfig.enableCustomizeVideoData = YES;
+    pubConfig.enableVideo = aEnableVideo;
     
     EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
     pubConfig.maxVideoKbps = (int)options.maxVideoKbps;
@@ -636,12 +625,6 @@
             videoItem.videoView.enableVoice = !self.microphoneButton.isSelected;
         }
     }
-    
-    if (!self.microphoneButton.isSelected && self.speakerButton.isSelected) {
-        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-        [audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
-        [audioSession setActive:YES error:nil];
-    }
 }
 
 - (void)inviteButtonAction:(EMButton *)aButton
@@ -683,21 +666,19 @@
 {
     aButton.selected = !aButton.isSelected;
     if (self.conference) {
-//        [[EMClient sharedClient].conferenceManager updateConference:self.conference enableVideo:aButton.selected];
-        [self pubLocalStreamWithEnableVideo:YES completion:nil];
+        [[EMClient sharedClient].conferenceManager updateConference:self.conference enableVideo:aButton.selected];
     }
-
-//    EMStreamItem *videoItem = [self.streamItemDict objectForKey:self.pubStreamId];
-//    videoItem.videoView.enableVideo = aButton.isSelected;
-//    self.switchCameraButton.enabled = aButton.isSelected;
-//
-//    if (aButton.selected) {
-//        BOOL isUseBackCamera = [EMDemoOptions sharedOptions].isUseBackCamera;
-//        if (isUseBackCamera != self.isUseBackCamera) {
-//            self.switchCameraButton.selected = self.isUseBackCamera;
-//            [[EMClient sharedClient].conferenceManager updateConferenceWithSwitchCamera:self.conference];
-//        }
-//    }
+    
+    EMStreamItem *videoItem = [self.streamItemDict objectForKey:self.pubStreamId];
+    videoItem.videoView.enableVideo = aButton.isSelected;
+    self.switchCameraButton.enabled = aButton.isSelected;
+    
+    if (aButton.selected) {
+        BOOL isUseBackCamera = [EMDemoOptions sharedOptions].isUseBackCamera;
+        if (isUseBackCamera != self.isUseBackCamera) {
+            self.switchCameraButton.selected = self.isUseBackCamera;
+        }
+    }
 }
 
 - (void)gridAction

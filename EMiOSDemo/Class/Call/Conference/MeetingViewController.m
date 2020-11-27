@@ -60,7 +60,7 @@
         weakself.conference = aCall;
         weakself.password = aPassword;
         
-        [weakself pubLocalStreamWithEnableVideo:YES completion:nil];
+        [weakself pubLocalStreamWithEnableVideo:NO completion:nil];
         
         //群组会议模式中不会给群组中发邀请消息，只会给被邀请人单发消息
         
@@ -82,7 +82,7 @@
         }
     };
     if (self.isCreater) {
-        [[EMClient sharedClient].conferenceManager createAndJoinConferenceWithType:self.type password:self.password record:[EMDemoOptions sharedOptions].willRecord mergeStream:[EMDemoOptions sharedOptions].willMergeStrem isSupportWechatMiniProgram:YES completion:block];
+        [[EMClient sharedClient].conferenceManager createAndJoinConferenceWithType:EMConferenceTypeCommunication password:self.password record:[EMDemoOptions sharedOptions].willRecord mergeStream:[EMDemoOptions sharedOptions].willMergeStrem isSupportWechatMiniProgram:[EMDemoOptions sharedOptions].isSupportWechatMiniProgram completion:block];
     } else {
         [[EMClient sharedClient].conferenceManager joinConferenceWithConfId:self.joinConfId password:self.password completion:^(EMCallConference *aCall, EMError *aError) {
             block(aCall, weakself.password, aError);
