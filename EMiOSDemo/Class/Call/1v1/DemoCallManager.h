@@ -7,17 +7,17 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "FUOpenGLView.h"
-#import "FUCamera.h"
 
-@class FUCamera;
+#import <FURenderKit/FURenderKit.h>
+#import <FURenderKit/FUGLDisplayView.h>
+
 @interface DemoCallManager : NSObject
 
 + (instancetype)sharedManager;
 
-@property (nonatomic, strong) FUOpenGLView *glView;
+@property (nonatomic, strong) FUGLDisplayView *glView;
 
-@property (strong, nonatomic) FUCamera *mCamera;
+@property (nonatomic, strong) FUCaptureCamera *mCamera;
 
 - (void)answerCall:(NSString *)aCallId;
 
@@ -25,5 +25,7 @@
                reason:(EMCallEndReason)aReason;
 
 - (void)saveCallOptions;
+
+@property (strong, nonatomic, readonly) EMCallSession *currentCall;
 
 @end
