@@ -11,24 +11,18 @@
 #import "EMButton.h"
 
 /** faceU */
-#import "FUManager.h"
-#import "FUAPIDemoBar.h"
-
-
-#import "FUTestRecorder.h"
+#import "FUDemoManager.h"
 
 
 #define TAG_MINVIDEOVIEW_LOCAL 100
 #define TAG_MINVIDEOVIEW_REMOTE 200
-//FUAPIDemoBarDelegate,
-@interface Call1v1VideoViewController ()<FUAPIDemoBarDelegate>
+
+@interface Call1v1VideoViewController ()
 
 @property (nonatomic, strong) UIView *minVideoView;
 
 @property (nonatomic, strong) EMButton *switchCameraButton;
-
-/**faceU */
-@property (nonatomic, strong) FUAPIDemoBar *demoBar;
+@property(nonatomic, strong) FUDemoManager *demoManager;
 
 
 @end
@@ -46,23 +40,19 @@
         [self speakerButtonAction];
     }
     
-    [[FUTestRecorder shareRecorder] setupRecord];
+    // FaceUnity UI
+    CGFloat safeAreaBottom = 0;
+    if (@available(iOS 11.0, *)) {
+        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+    }
     
-    /**faceU */
-    [[FUManager shareManager] loadFilter];
-    [FUManager shareManager].isRender = YES;
-    [FUManager shareManager].flipx = YES;
-    [FUManager shareManager].trackFlipx = YES;
-    [self.view addSubview:self.demoBar];
-    
+    self.demoManager = [[FUDemoManager alloc] initWithTargetController:self originY:CGRectGetHeight(self.view.frame) - FUBottomBarHeight - safeAreaBottom - 200];
 }
 
 - (void)dealloc{
-    
     [[DemoCallManager sharedManager].glView removeFromSuperview];
     [DemoCallManager sharedManager].glView = nil;
     [[FUManager shareManager] destoryItems];
-    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -162,59 +152,13 @@
         make.edges.equalTo(self.minVideoView);
     }];
     
-    [DemoCallManager sharedManager].glView = [[FUOpenGLView alloc] init];
-    [DemoCallManager sharedManager].glView.contentMode = FUOpenGLViewContentModeScaleAspectFill;
+    [DemoCallManager sharedManager].glView = [[FUGLDisplayView alloc] init];
     [self.callSession.localVideoView addSubview:[DemoCallManager sharedManager].glView];
-
     [[DemoCallManager sharedManager].glView mas_makeConstraints:^(MASConstraintMaker *make) {
-        
         make.edges.equalTo(self.callSession.localVideoView);
     }];
     
-    
 }
-
-#pragma mark --------------faceU------------
-
-/// 初始化 demoBar
-- (FUAPIDemoBar *)demoBar {
-    if (!_demoBar) {
-        
-        _demoBar = [[FUAPIDemoBar alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 194 -250, self.view.frame.size.width, 194)];
-        _demoBar.mDelegate = self;
-    }
-    return _demoBar ;
-}
-
-#pragma -FUAPIDemoBarDelegate
-
--(void)filterValueChange:(FUBeautyParam *)param{
-    
-    [[FUManager shareManager] filterValueChange:param];
-}
-
--(void)switchRenderState:(BOOL)state{
-    
-    [FUManager shareManager].isRender = state;
-}
-
--(void)bottomDidChange:(int)index{
-    if (index < 3) {
-        [[FUManager shareManager] setRenderType:FUDataTypeBeautify];
-    }
-    if (index == 3) {
-        [[FUManager shareManager] setRenderType:FUDataTypeStrick];
-    }
-    
-    if (index == 4) {
-        [[FUManager shareManager] setRenderType:FUDataTypeMakeup];
-    }
-    if (index == 5) {
-        
-        [[FUManager shareManager] setRenderType:FUDataTypebody];
-    }
-}
-
 
 /// 远端视图
 - (void)_setRemoteVideoViewFrame
@@ -345,8 +289,6 @@
     aButton.selected = !aButton.selected;
     
     [[FUManager shareManager] onCameraChange];
-    
-//    [self.callSession switchCameraPosition:!aButton.selected];
 
 }
 

@@ -21,14 +21,13 @@
 
 /**faceU */
 #import "FUManager.h"
-#import "FUCamera.h"
-
-#import "FUTestRecorder.h"
 
 
 static DemoCallManager *callManager = nil;
 
-@interface DemoCallManager()<EMChatManagerDelegate, EMCallManagerDelegate, EMCallBuilderDelegate,FUCameraDataSource,FUCameraDelegate>
+@interface DemoCallManager()<EMChatManagerDelegate, EMCallManagerDelegate, EMCallBuilderDelegate, FUCaptureCameraDelegate> {
+    CVPixelBufferRef _pixelBufferCache;
+}
 
 @property (strong, nonatomic) NSObject *callLock;
 @property (strong, nonatomic) EMCallSession *currentCall;
@@ -82,13 +81,6 @@ static DemoCallManager *callManager = nil;
 
 #pragma mark - private
 
--(FUCamera *)mCamera {
-    if (!_mCamera) {
-        _mCamera = [[FUCamera alloc] init];
-        _mCamera.delegate = self ;
-    }
-    return _mCamera ;
-}
 - (void)_initManager
 {
     _callLock = [[NSObject alloc] init];
@@ -130,6 +122,10 @@ static DemoCallManager *callManager = nil;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(closeAlertView:) name:@"didAlert" object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActive) name:UIApplicationWillResignActiveNotification object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+    
 //    __weak typeof(self) weakSelf = self;
 //    self.callCenter = [[CTCallCenter alloc] init];
 //    self.callCenter.callEventHandler = ^(CTCall* call) {
@@ -143,6 +139,19 @@ static DemoCallManager *callManager = nil;
 //            [weakSelf.currentController resumeCall];
 //        }
 //    };
+}
+
+- (void)applicationWillResignActive {
+    if (self.currentCall && self.mCamera) {
+        [self.mCamera stopCapture];
+        count = 0;
+    }
+}
+
+- (void)applicationDidBecomeActive {
+    if (self.currentCall && self.mCamera) {
+        [self.mCamera startCapture];
+    }
 }
 
 #pragma mark - Call Timeout Before Answered
@@ -276,6 +285,7 @@ static DemoCallManager *callManager = nil;
         [[self audioRecorder] startAudioDataRecord];
     }
     if(options.enableCustomizeVideoData){
+        
         [self.mCamera startCapture];
 
     }
@@ -544,29 +554,35 @@ static DemoCallManager *callManager = nil;
 {
     [self _endCallWithId:aCallId isNeedHangup:YES reason:aReason];
 }
-#pragma mark - FUCameraDelegate
 
--(void)didOutputVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
-//    NSLog(@"自采集视频数据.....");
-    CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) ;
-//    [[FUManager shareManager] renderItemsToPixelBuffer:pixelBuffer];
+#pragma mark - FUCaptureCameraDelegate
+static int count = 0;
+- (void)didOutputVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
+    // 性能测试相关
+    if (count < 5) {
+        /// 过滤前5帧
+        count += 1;
+    } else {
+        CMTime timeStamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
     
-    if (pixelBuffer != NULL) {
-        CMTime cmTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
-        
-        [[FUTestRecorder shareRecorder] processFrameWithLog];
-        
-      /* 视频处理 */
-        [[FUManager shareManager] renderItemsToPixelBuffer:pixelBuffer];
-        
-        /* 自采集预览 */
-        [_glView displayPixelBuffer:pixelBuffer];
-        
-        [EMClient.sharedClient.callManager inputVideoPixelBuffer:pixelBuffer sampleBufferTime:cmTime rotation:0 callId:self.currentCall.callId completion:^(EMError *aError) {
-            //NSLog(@"发送完成");
-        }];
-    
+        CVPixelBufferRef buffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+        buffer = [[FUManager shareManager] renderItemsToPixelBuffer:buffer];
+        if (buffer) {
+            [self.glView displayPixelBuffer:buffer];
+            [EMClient.sharedClient.callManager inputVideoPixelBuffer:buffer sampleBufferTime:timeStamp rotation:0 callId:self.currentCall.callId completion:^(EMError *aError) {
+//                NSLog(@"发送完成");
+            }];
+        }
     }
+}
+
+#pragma mark - Getters
+- (FUCaptureCamera *)mCamera {
+    if (!_mCamera) {
+        _mCamera = [[FUCaptureCamera alloc] initWithCameraPosition:AVCaptureDevicePositionFront captureFormat:kCVPixelFormatType_420YpCbCr8BiPlanarFullRange];
+        _mCamera.delegate = self;
+    }
+    return _mCamera ;
 }
 
 @end

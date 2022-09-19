@@ -1,13 +1,10 @@
 PODS:
-  - FBRetainCycleDetector (0.1.4)
   - FLAnimatedImage (1.0.12)
+  - FURenderKit (8.3.0)
   - Hyphenate (3.7.2)
   - Masonry (1.1.0)
   - MBProgressHUD (1.1.0)
   - MJRefresh (3.4.3)
-  - MLeaksFinder (1.0.0):
-    - FBRetainCycleDetector
-  - Nama (7.2.0)
   - SDWebImage (4.4.8):
     - SDWebImage/Core (= 4.4.8)
   - SDWebImage/Core (4.4.8)
@@ -18,42 +15,37 @@ PODS:
 
 DEPENDENCIES:
   - FLAnimatedImage (~> 1.0)
+  - FURenderKit (~> 8.3.0)
   - Hyphenate (~> 3.7.2)
   - Masonry
   - MBProgressHUD (~> 1.1.0)
   - MJRefresh
-  - MLeaksFinder
-  - Nama (~> 7.2.0)
   - SDWebImage (~> 4.0)
   - SDWebImage/GIF
   - SVProgressHUD
 
 SPEC REPOS:
-  master:
-    - FLAnimatedImage
+  https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git:
+    - FURenderKit
   trunk:
-    - FBRetainCycleDetector
+    - FLAnimatedImage
     - Hyphenate
     - Masonry
     - MBProgressHUD
     - MJRefresh
-    - MLeaksFinder
-    - Nama
     - SDWebImage
     - SVProgressHUD
 
 SPEC CHECKSUMS:
-  FBRetainCycleDetector: 46f8179bbb1c587deee3ea838a1a3ee02acf5015
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
+  FURenderKit: 3cd05abd03134d287a1d63cbaaeb95d304ba6bd6
   Hyphenate: a9da397810e08c4b3173a5c8f04868165ec48b9c
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   MJRefresh: 53e3e3219f204425ee6d3e62e8733d3295944cd6
-  MLeaksFinder: 8c435bd2f6d070af18cff082b503b21adc130fc0
-  Nama: 6513d06085933c8d13b1e6360f5c1ea6996f745b
   SDWebImage: 783af2c3fa36291a250030c4752ee370a9a51d13
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
 
-PODFILE CHECKSUM: 06b2646183e2ac59dab3f3761b7fab8da84ee0f6
+PODFILE CHECKSUM: af1f1868014e08be9d876f29d0e90c8b6109c487
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.11.3
