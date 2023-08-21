@@ -20,7 +20,7 @@
 #import "AudioRecord.h"
 
 /**faceU */
-#import "FUManager.h"
+#import "FUDemoManager.h"
 
 
 static DemoCallManager *callManager = nil;
@@ -557,7 +557,7 @@ static DemoCallManager *callManager = nil;
 
 #pragma mark - FUCaptureCameraDelegate
 static int count = 0;
-- (void)didOutputVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
+- (void)didOutputVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer captureDevicePosition:(AVCaptureDevicePosition)position{
     // 性能测试相关
     if (count < 5) {
         /// 过滤前5帧
@@ -566,7 +566,21 @@ static int count = 0;
         CMTime timeStamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
     
         CVPixelBufferRef buffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-        buffer = [[FUManager shareManager] renderItemsToPixelBuffer:buffer];
+        [[FUDemoManager shared] checkAITrackedResult];
+        if ([FUDemoManager shared].shouldRender) {
+            [[FUTestRecorder shareRecorder] processFrameWithLog];
+            [FUDemoManager updateBeautyBlurEffect];
+            FURenderInput *input = [[FURenderInput alloc] init];
+            input.renderConfig.imageOrientation = FUImageOrientationUP;
+            input.pixelBuffer = buffer;
+            //开启重力感应，内部会自动计算正确方向，设置fuSetDefaultRotationMode，无须外面设置
+            input.renderConfig.gravityEnable = YES;
+            FURenderOutput *output = [[FURenderKit shareRenderKit] renderWithInput:input];
+            if (output) {
+                buffer = output.pixelBuffer;
+            }
+        }
+        
         if (buffer) {
             [self.glView displayPixelBuffer:buffer];
             [EMClient.sharedClient.callManager inputVideoPixelBuffer:buffer sampleBufferTime:timeStamp rotation:0 callId:self.currentCall.callId completion:^(EMError *aError) {
