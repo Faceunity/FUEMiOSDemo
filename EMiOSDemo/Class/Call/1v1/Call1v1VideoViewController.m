@@ -46,13 +46,15 @@
         safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
     }
     
-    self.demoManager = [[FUDemoManager alloc] initWithTargetController:self originY:CGRectGetHeight(self.view.frame) - FUBottomBarHeight - safeAreaBottom - 200];
+    [FUDemoManager setupFUSDK];
+    [[FUDemoManager shared] addDemoViewToView:self.view originY:CGRectGetHeight(self.view.frame) - FUBottomBarHeight - FUSafaAreaBottomInsets() - 200];
+    
 }
 
 - (void)dealloc{
     [[DemoCallManager sharedManager].glView removeFromSuperview];
     [DemoCallManager sharedManager].glView = nil;
-    [[FUManager shareManager] destoryItems];
+    [FUDemoManager destory];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -287,8 +289,7 @@
 {
     [[DemoCallManager sharedManager].mCamera changeCameraInputDeviceisFront:aButton.selected];
     aButton.selected = !aButton.selected;
-    
-    [[FUManager shareManager] onCameraChange];
+    [FUDemoManager resetTrackedResult];
 
 }
 

@@ -15,7 +15,7 @@ target 'EMiOSDemo' do
     pod 'FLAnimatedImage', '~> 1.0'
     
     pod 'SVProgressHUD'
-    pod 'FURenderKit', '~> 8.3.0'
+    pod 'FURenderKit', '~> 8.7.0'
     #pod 'MLeaksFinder'
     
 
